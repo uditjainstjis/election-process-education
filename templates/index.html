@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Process Education Hub | Powered by Gemini AI</title>
+    <meta name="description" content="AI-powered election education platform teaching citizens about voting, EVM, Election Commission, and democratic processes in India">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { font-size: 1.1rem; opacity: 0.9; }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .card h2 { color: #667eea; margin-bottom: 20px; font-size: 1.8rem; }
+        #chat-section { grid-column: span 2; }
+        #chat-messages { height: 400px; overflow-y: auto; border: 2px solid #f0f0f0; border-radius: 10px; padding: 15px; margin-bottom: 20px; background: #f9f9f9; }
+        .message { margin-bottom: 15px; padding: 12px; border-radius: 8px; }
+        .user-message { background: #667eea; color: white; margin-left: 50px; }
+        .bot-message { background: #e7f3ff; color: #333; margin-right: 50px; }
+        .input-group { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        button { padding: 15px 30px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; }
+        button:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .quiz-question { margin-bottom: 25px; padding: 20px; background: #f9f9f9; border-radius: 10px; }
+        .quiz-options { margin-top: 15px; }
+        .quiz-option { display: block; padding: 12px; margin: 8px 0; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .quiz-option:hover { border-color: #667eea; background: #f0f4ff; }
+        .quiz-option.correct { border-color: #4caf50; background: #e8f5e9; }
+        .quiz-option.incorrect { border-color: #f44336; background: #ffebee; }
+        .explanation { margin-top: 10px; padding: 15px; background: #fff9c4; border-left: 4px solid #ffc107; border-radius: 5px; font-size: 0.95rem; }
+        .resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .resource-link { display: block; padding: 15px; background: #f5f5f5; border-radius: 8px; text-decoration: none; color: #333; transition: all 0.3s; }
+        .resource-link:hover { background: #667eea; color: white; transform: translateX(5px); }
+        .loading { text-align: center; padding: 20px; color: #667eea; font-weight: 600; }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } #chat-section { grid-column: span 1; } header h1 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗳️ Election Process Education Hub</h1>
+            <p class="subtitle">Learn about voting, elections, and democracy | Powered by Google Gemini AI</p>
+        </header>
+
+        <div class="main-content">
+            <section id="chat-section" class="card">
+                <h2>💬 Ask ElectionBot</h2>
+                <div id="chat-messages">
+                    <div class="message bot-message">
+                        Hello! I'm ElectionBot 🤖 I can help you learn about:<br>
+                        • Voter registration (Form 6)<br>
+                        • How to vote and what happens in a polling booth<br>
+                        • Electronic Voting Machines (EVM) and VVPAT<br>
+                        • Election Commission of India<br>
+                        • Types of elections in India<br>
+                        • NOTA, Model Code of Conduct, and more!<br><br>
+                        Ask me anything about the election process!
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="user-input" placeholder="Ask a question about elections..." />
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🧠 Election Quiz</h2>
+                <button onclick="loadQuiz()" style="width: 100%; margin-bottom: 20px;">Start New Quiz</button>
+                <div id="quiz-container"></div>
+            </section>
+
+            <section class="card">
+                <h2>📚 Official Resources</h2>
+                <div class="resources">
+                    <a href="https://voters.eci.gov.in/" target="_blank" class="resource-link">🌐 National Voters' Service Portal</a>
+                    <a href="https://eci.gov.in/" target="_blank" class="resource-link">🏛️ Election Commission of India</a>
+                    <a href="https://eci.gov.in/voter/" target="_blank" class="resource-link">📋 Voter Registration Forms</a>
+                    <a href="https://www.nvsp.in/" target="_blank" class="resource-link">🆔 Check Voter ID Status</a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+            addMessage('Thinking...', 'bot', true);
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+                removeLastMessage();
+                addMessage(data.response || data.error, 'bot');
+            } catch (error) {
+                removeLastMessage();
+                addMessage('Sorry, something went wrong. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(text, sender, isTemp = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = text;
+            if (isTemp) messageDiv.id = 'temp-message';
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeLastMessage() {
+            const temp = document.getElementById('temp-message');
+            if (temp) temp.remove();
+        }
+
+        async function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '<div class="loading">Loading quiz...</div>';
+
+            try {
+                const response = await fetch('/quiz');
+                const data = await response.json();
+                displayQuiz(data.questions);
+            } catch (error) {
+                container.innerHTML = '<p style="color: red;">Failed to load quiz. Please try again.</p>';
+            }
+        }
+
+        function displayQuiz(questions) {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'quiz-question';
+                qDiv.innerHTML = `
+                    <h3>Question ${idx + 1}</h3>
+                    <p><strong>${q.question}</strong></p>
+                    <div class="quiz-options">
+                        ${q.options.map((opt, i) => `
+                            <label class="quiz-option" data-answer="${opt.charAt(0)}" data-correct="${q.answer}" data-explanation="${q.explanation}">
+                                <input type="radio" name="q${idx}" value="${opt.charAt(0)}" style="margin-right: 10px;">
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="exp-${idx}" style="display: none;"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const input = this.querySelector('input[type="radio"]');
+                    input.checked = true;
+                    checkAnswer(this);
+                });
+            });
+        }
+
+        function checkAnswer(option) {
+            const parent = option.parentElement;
+            const allOptions = parent.querySelectorAll('.quiz-option');
+            const selected = option.dataset.answer;
+            const correct = option.dataset.correct;
+            const explanation = option.dataset.explanation;
+            const expDiv = parent.nextElementSibling;
+
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.dataset.answer === correct) {
+                    opt.classList.add('correct');
+                }
+                if (opt.dataset.answer === selected && selected !== correct) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            expDiv.textContent = `✅ ${explanation}`;
+            expDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
